@@ -10,6 +10,10 @@ pull:
 install:
 	uv tool install .
 
+install-skill:
+	mkdir -p ~/.agents/skills
+	cp reference/project-kb/SKILL.md ~/.agents/skills/project-kb/SKILL.md
+
 reinstall:
 	uv tool install . --reinstall
 
