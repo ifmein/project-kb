@@ -158,7 +158,15 @@ def print_search_results(results: list[dict], query: str) -> None:
     console.print(f"[bold]{len(results)}[/bold] result(s) for [bold]{query!r}[/bold]\n")
     for r in results:
         rtype = r.get("type", "")
-        if rtype == "note":
+        if rtype == "project":
+            title = f"[green]project[/green]  {r.get('id', '')}"
+            body = (
+                f"[bold]Name:[/bold]        {r.get('name', '')}\n"
+                f"[bold]Description:[/bold] {r.get('description', '') or '-'}\n"
+                f"[bold]Status:[/bold]      {r.get('status', '')}\n"
+                f"[bold]Date:[/bold]        {r.get('created_at', '')}"
+            )
+        elif rtype == "note":
             title = f"[cyan]note[/cyan]  {r.get('id', '')}"
             body = (
                 f"[bold]Content:[/bold] {r.get('content', '')}\n"

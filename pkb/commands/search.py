@@ -21,8 +21,7 @@ def _search_db(
     results: list[dict] = []
 
     # ---------------------------------------------------------------- projects
-    # Project search is skipped when --project filter is active (it already
-    # scopes the results) or when --type is task/note.
+    # Skipped when --project filter is active (already scoped) or --type task/note.
     if type_filter in (None, "project") and project_id is None:
         sql = """
             SELECT
@@ -46,6 +45,8 @@ def _search_db(
                 }
             )
 
+    # ------------------------------------------------------------------ notes
+    if type_filter in (None, "note"):
         if project_id:
             sql = """
                 SELECT
@@ -71,7 +72,6 @@ def _search_db(
             rows = conn.execute(sql, (query,)).fetchall()
 
         for r in rows:
-            # Resolve project name for display
             proj_name: str | None = None
             if r["project_id"]:
                 proj_row = conn.execute("SELECT name FROM projects WHERE id = ?", (r["project_id"],)).fetchone()
