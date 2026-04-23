@@ -14,8 +14,8 @@ from pkb.options import json_option, get_json_flag
 
 
 _CONFIG_DIR = Path.home() / ".config" / "project-kb"
-# Path to the bundled libsimple inside the project tree (resolved at import time).
-_BUNDLED_EXT = Path(__file__).parent.parent.parent / "reference" / "libsimple-osx-arm64" / "libsimple.dylib"
+# Path to the bundled libsimple inside the installed package (pkb/data/).
+_BUNDLED_EXT = Path(__file__).parent.parent / "data" / "libsimple.dylib"
 
 
 # ---------------------------------------------------------------------------
