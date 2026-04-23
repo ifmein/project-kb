@@ -97,6 +97,7 @@ CREATE TABLE IF NOT EXISTS projects (
     description TEXT NOT NULL DEFAULT '',
     status      TEXT NOT NULL DEFAULT 'active',
     repo_url    TEXT NOT NULL DEFAULT '',
+    local_path  TEXT NOT NULL DEFAULT '',
     tech_stack  TEXT NOT NULL DEFAULT '',
     created_at  REAL NOT NULL,
     updated_at  REAL NOT NULL
@@ -224,6 +225,9 @@ def init_db(conn: sqlite3.Connection) -> str:
     conn.executescript(_DDL_TRIGGERS)
     conn.executescript(_DDL_INDEXES)
 
+    # Schema migrations — ADD COLUMN is idempotent via the exception check
+    _migrate(conn)
+
     # Backfill FTS indexes from existing data (safe to run repeatedly;
     # FTS5 'rebuild' re-reads the content table from scratch).
     conn.execute("INSERT INTO projects_fts(projects_fts) VALUES('rebuild')")
@@ -231,3 +235,10 @@ def init_db(conn: sqlite3.Connection) -> str:
     conn.execute("INSERT INTO tasks_fts(tasks_fts) VALUES('rebuild')")
 
     return tokenizer
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Apply incremental column additions to existing databases."""
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(projects)").fetchall()}
+    if "local_path" not in existing:
+        conn.execute("ALTER TABLE projects ADD COLUMN local_path TEXT NOT NULL DEFAULT ''")

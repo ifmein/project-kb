@@ -55,6 +55,8 @@ def print_projects_table(rows: list[dict]) -> None:
     t.add_column("ID", style="dim", no_wrap=True)
     t.add_column("Name", style="bold")
     t.add_column("Status")
+    t.add_column("Repo")
+    t.add_column("Local Path")
     t.add_column("Tech Stack")
     t.add_column("Description")
     for r in rows:
@@ -63,6 +65,8 @@ def print_projects_table(rows: list[dict]) -> None:
             r.get("id", ""),
             r.get("name", ""),
             f"[{status_style}]{r.get('status', '')}[/{status_style}]",
+            r.get("repo_url", "") or "",
+            r.get("local_path", "") or "",
             r.get("tech_stack", "") or "",
             (r.get("description", "") or "")[:60],
         )
@@ -76,6 +80,7 @@ def print_project_panel(r: dict, task_stats: dict | None = None) -> None:
         f"[bold]Status:[/bold]      {r.get('status', '')}",
         f"[bold]Description:[/bold] {r.get('description', '')}",
         f"[bold]Repo:[/bold]        {r.get('repo_url', '') or '-'}",
+        f"[bold]Local Path:[/bold]  {r.get('local_path', '') or '-'}",
         f"[bold]Tech Stack:[/bold]  {r.get('tech_stack', '') or '-'}",
         f"[bold]Created:[/bold]     {r.get('created_at', '')}",
         f"[bold]Updated:[/bold]     {r.get('updated_at', '')}",

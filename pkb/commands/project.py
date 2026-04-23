@@ -87,6 +87,7 @@ def project_list(ctx: click.Context, status_filter: str | None, as_json: bool) -
 @click.option("--desc", default="", help="Project description.")
 @click.option("--status", "status", default="active", help="Status (default: active).")
 @click.option("--repo", "repo_url", default="", help="Repository URL.")
+@click.option("--path", "local_path", default="", help="Local filesystem path.")
 @click.option("--tech", "tech_stack", default="", help="Tech stack (comma-separated).")
 @json_option
 @click.pass_context
@@ -96,6 +97,7 @@ def project_add(
     desc: str,
     status: str,
     repo_url: str,
+    local_path: str,
     tech_stack: str,
     as_json: bool,
 ) -> None:
@@ -107,10 +109,10 @@ def project_add(
     try:
         conn.execute(
             """
-            INSERT INTO projects (id, name, description, status, repo_url, tech_stack, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO projects (id, name, description, status, repo_url, local_path, tech_stack, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (proj_id, name, desc, status, repo_url, tech_stack, ts, ts),
+            (proj_id, name, desc, status, repo_url, local_path, tech_stack, ts, ts),
         )
         row = conn.execute("SELECT * FROM projects WHERE id = ?", (proj_id,)).fetchone()
     finally:
@@ -167,6 +169,7 @@ def project_show(ctx: click.Context, id_or_name: str, as_json: bool) -> None:
 @click.option("--desc", default=None)
 @click.option("--status", default=None)
 @click.option("--repo", "repo_url", default=None)
+@click.option("--path", "local_path", default=None, help="Local filesystem path.")
 @click.option("--tech", "tech_stack", default=None)
 @json_option
 @click.pass_context
@@ -177,6 +180,7 @@ def project_update(
     desc: str | None,
     status: str | None,
     repo_url: str | None,
+    local_path: str | None,
     tech_stack: str | None,
     as_json: bool,
 ) -> None:
@@ -191,6 +195,8 @@ def project_update(
         fields["status"] = status
     if repo_url is not None:
         fields["repo_url"] = repo_url
+    if local_path is not None:
+        fields["local_path"] = local_path
     if tech_stack is not None:
         fields["tech_stack"] = tech_stack
 
