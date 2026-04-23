@@ -1,4 +1,4 @@
-"""Commands: pkb init  /  pkb status"""
+"""Commands: pkb init / pkb status / pkb completion."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 
 import click
+from click.shell_completion import get_completion_class
 
 from pkb import db as _db
 from pkb import output as out
@@ -125,3 +126,29 @@ def status_cmd(ctx: click.Context, as_json: bool) -> None:
         out.console.print()
         for table, count in counts.items():
             out.console.print(f"  {table:<12} {count} row(s)")
+
+
+# ---------------------------------------------------------------------------
+# pkb completion
+# ---------------------------------------------------------------------------
+
+
+@click.command("completion")
+@click.argument("shell", type=click.Choice(["bash", "zsh"], case_sensitive=False))
+@click.pass_context
+def completion_cmd(ctx: click.Context, shell: str) -> None:
+    """Print shell completion script for bash/zsh."""
+    shell_name = shell.lower()
+    complete_var = "_PKB_COMPLETE"
+    shell_complete = get_completion_class(shell_name)
+    if shell_complete is None:
+        raise click.UsageError(f"Unsupported shell: {shell_name}")
+
+    root_cmd = ctx.find_root().command
+    script = shell_complete(
+        cli=root_cmd,
+        ctx_args={},
+        prog_name="pkb",
+        complete_var=complete_var,
+    )
+    click.echo(script.source())

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import click
 
-from pkb.commands.init_cmd import init_cmd, status_cmd
+from pkb.commands.init_cmd import completion_cmd, init_cmd, status_cmd
 from pkb.commands.project import project
 from pkb.commands.task import task
 from pkb.commands.note import note
@@ -22,6 +22,7 @@ def cli(ctx: click.Context, as_json: bool) -> None:
 
 cli.add_command(init_cmd, name="init")
 cli.add_command(status_cmd, name="status")
+cli.add_command(completion_cmd, name="completion")
 cli.add_command(project)
 cli.add_command(task)
 cli.add_command(note)

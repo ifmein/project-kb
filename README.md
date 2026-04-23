@@ -86,6 +86,20 @@ pkb search "ntfy" --json                  # JSON 输出
 ```bash
 pkb init      # 初始化配置目录 + DB
 pkb status    # 显示 DB 路径、扩展加载状态、各表记录数
+pkb completion <bash|zsh>  # 生成 shell 补全脚本
+```
+
+示例：
+
+```bash
+# bash
+eval "$(pkb completion bash)"
+
+# zsh
+eval "$(pkb completion zsh)"
+
+# oh-my-zsh 用户可以直接把输出重定向到补全目录：
+pkb completion zsh > ~/.oh-my-zsh/completions/_pkb
 ```
 
 ## 环境变量
@@ -105,7 +119,7 @@ pkb/
 ├── options.py          # json_option 装饰器 + get_json_flag()
 ├── output.py           # Rich 表格/面板输出 + JSON helpers
 └── commands/
-    ├── init_cmd.py     # pkb init / pkb status
+    ├── init_cmd.py     # pkb init / pkb status / pkb completion
     ├── project.py      # pkb project *
     ├── task.py         # pkb task *
     ├── note.py         # pkb note *
