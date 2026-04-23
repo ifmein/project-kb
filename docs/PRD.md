@@ -19,41 +19,42 @@ CLI 工具，SQLite 存储，作为 agent 的项目知识库后端。
 
 ### projects
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | TEXT PK | 格式: `proj_<nanoid>` |
-| name | TEXT | 项目名，唯一 |
-| description | TEXT | 项目描述 |
-| status | TEXT | active / paused / completed / archived |
-| repo_url | TEXT | 仓库地址（Gitea/GitHub） |
-| tech_stack | TEXT | 技术栈，逗号分隔 |
-| created_at | REAL | Unix timestamp |
-| updated_at | REAL | Unix timestamp |
+| 字段        | 类型    | 说明                                   |
+| ----------- | ------- | -------------------------------------- |
+| id          | TEXT PK | 格式: `proj_<nanoid>`                  |
+| name        | TEXT    | 项目名，唯一                           |
+| description | TEXT    | 项目描述                               |
+| status      | TEXT    | active / paused / completed / archived |
+| repo_url    | TEXT    | 仓库地址（Gitea/GitHub）               |
+| local_path  | TEXT    | 本地文件系统路径                       |
+| tech_stack  | TEXT    | 技术栈，逗号分隔                       |
+| created_at  | REAL    | Unix timestamp                         |
+| updated_at  | REAL    | Unix timestamp                         |
 
 ### tasks
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | TEXT PK | 格式: `task_<nanoid>` |
-| project_id | TEXT FK | 关联项目 |
-| title | TEXT | 任务标题 |
-| description | TEXT | 详细描述 |
-| status | TEXT | todo / in_progress / done / cancelled |
-| priority | TEXT | P0 / P1 / P2 / P3 |
-| assignee | TEXT | 负责人 |
-| due_date | TEXT | 截止日期 (ISO 8601) |
-| created_at | REAL | Unix timestamp |
-| updated_at | REAL | Unix timestamp |
+| 字段        | 类型    | 说明                                  |
+| ----------- | ------- | ------------------------------------- |
+| id          | TEXT PK | 格式: `task_<nanoid>`                 |
+| project_id  | TEXT FK | 关联项目                              |
+| title       | TEXT    | 任务标题                              |
+| description | TEXT    | 详细描述                              |
+| status      | TEXT    | todo / in_progress / done / cancelled |
+| priority    | TEXT    | P0 / P1 / P2 / P3                     |
+| assignee    | TEXT    | 负责人                                |
+| due_date    | TEXT    | 截止日期 (ISO 8601)                   |
+| created_at  | REAL    | Unix timestamp                        |
+| updated_at  | REAL    | Unix timestamp                        |
 
 ### notes
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | TEXT PK | 格式: `note_<nanoid>` |
+| 字段       | 类型    | 说明                          |
+| ---------- | ------- | ----------------------------- |
+| id         | TEXT PK | 格式: `note_<nanoid>`         |
 | project_id | TEXT FK | 关联项目（可为空 = 全局备忘） |
-| content | TEXT | 备忘内容 |
-| tags | TEXT | 标签，逗号分隔 |
-| created_at | REAL | Unix timestamp |
+| content    | TEXT    | 备忘内容                      |
+| tags       | TEXT    | 标签，逗号分隔                |
+| created_at | REAL    | Unix timestamp                |
 
 ### FTS5 虚拟表
 
@@ -61,6 +62,13 @@ CLI 工具，SQLite 存储，作为 agent 的项目知识库后端。
 
 ```sql
 -- simple tokenizer 支持中文分词 + 拼音搜索
+CREATE VIRTUAL TABLE projects_fts USING fts5(
+    name, description,
+    content=projects,
+    content_rowid=rowid,
+    tokenize='simple'
+);
+
 CREATE VIRTUAL TABLE notes_fts USING fts5(
     content,
     content=notes,
@@ -81,16 +89,17 @@ CREATE VIRTUAL TABLE tasks_fts USING fts5(
 
 **为什么用 simple tokenizer 而不是内置 trigram**：
 
-| | trigram | simple |
-|---|---|---|
-| 中文子串搜索 | ✅ | ✅ |
-| 拼音搜索 | ❌ | ✅（输入 `xm` 能匹配"项目"） |
-| 索引体积 | 大 ~3x | 正常 |
-| 部署 | 零依赖 | 需要 `libsimple.dylib` |
+|              | trigram | simple                       |
+| ------------ | ------- | ---------------------------- |
+| 中文子串搜索 | ✅      | ✅                           |
+| 拼音搜索     | ❌      | ✅（输入 `xm` 能匹配"项目"） |
+| 索引体积     | 大 ~3x  | 正常                         |
+| 部署         | 零依赖  | 需要 `libsimple.dylib`       |
 
 本机专用，部署成本固定一次，拼音搜索对 agent 有实用价值（agent 有时输入拼音缩写），选 simple。
 
 **为什么用 trigger 而不是手动写入**：
+
 - 一致性由数据库保证，不会漏写
 - 代码里只需 `INSERT INTO notes`，FTS 自动跟上
 - session_search 验证过这条路
@@ -133,11 +142,11 @@ pkb init   # 创建 ~/.config/project-kb/，建表，加载 simple 扩展验证
 ### 项目管理
 
 ```bash
-pkb project list [--status active]                          # 列出项目
-pkb project add --name "xxx" --desc "..."                   # 新建项目
-pkb project show <id|name>                                  # 项目详情（含任务统计）
-pkb project update <id|name> [--status paused] [--desc "..."] [--repo "..."]  # 更新字段
-pkb project delete <id|name>                                # 删除（级联删除 tasks/notes）
+pkb project list [--status active]                                             # 列出项目
+pkb project add --name "xxx" --desc "..." [--repo "url"] [--path "/本地/路径"]  # 新建项目
+pkb project show <id|name>                                                     # 项目详情（含任务统计）
+pkb project update <id|name> [--status paused] [--desc "..."] [--repo "..."] [--path "..."]  # 更新字段
+pkb project delete <id|name>                                                   # 删除（级联删除 tasks/notes）
 ```
 
 ### 任务管理
@@ -221,18 +230,18 @@ pkb project show nous-portal-kit --json
 
 ## 参考 session_search 的设计模式
 
-| session_search | pkb 对应 |
-|----------------|----------|
-| SQLite + FTS5 | SQLite + FTS5（notes_fts, tasks_fts） |
-| external content + trigger 自动同步 | 同上，trigger 保证 FTS 与主表一致 |
-| unicode61 tokenizer | simple tokenizer（中文 + 拼音） |
-| 无 query → 返回最近 session | 无 search term → 返回最近记录 |
-| 有 query → FTS5 + LLM 总结 | 有 search term → FTS5 返回结构化结果 |
-| 不返回 relevance 分数，靠排序暗示 | 同上，不暴露 FTS5 rank 负数值 |
-| _truncate_around_matches 截取上下文 | 返回完整内容（数据量小，不需要截取） |
-| _resolve_to_parent 去重 | 按 project 聚合 |
-| 并发控制 (semaphore) | 不需要（本地 SQLite，足够快） |
-| LLM 总结 | v2 再做（`pkb summarize --project <id>`） |
+| session_search                       | pkb 对应                                            |
+| ------------------------------------ | --------------------------------------------------- |
+| SQLite + FTS5                        | SQLite + FTS5（projects_fts, notes_fts, tasks_fts） |
+| external content + trigger 自动同步  | 同上，trigger 保证 FTS 与主表一致                   |
+| unicode61 tokenizer                  | simple tokenizer（中文 + 拼音）                     |
+| 无 query → 返回最近 session          | 无 search term → 返回最近记录                       |
+| 有 query → FTS5 + LLM 总结           | 有 search term → FTS5 返回结构化结果                |
+| 不返回 relevance 分数，靠排序暗示    | 同上，不暴露 FTS5 rank 负数值                       |
+| \_truncate_around_matches 截取上下文 | 返回完整内容（数据量小，不需要截取）                |
+| \_resolve_to_parent 去重             | 按 project 聚合                                     |
+| 并发控制 (semaphore)                 | 不需要（本地 SQLite，足够快）                       |
+| LLM 总结                             | v2 再做（`pkb summarize --project <id>`）           |
 
 ## 与 Agent 集成
 

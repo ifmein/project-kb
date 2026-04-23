@@ -31,9 +31,9 @@ set -x PKB_SIMPLE_EXT $PKB_DIR/libsimple  # 不带扩展名
 
 ```bash
 pkb project list [--status active]
-pkb project add --name "xxx" --desc "..."
+pkb project add --name "xxx" --desc "..." [--repo "url"] [--path "/本地/路径"] [--tech "Python"]
 pkb project show <id|name>
-pkb project update <id|name> [--status paused] [--desc "..."] [--repo "..."] [--stack "..."]
+pkb project update <id|name> [--status paused] [--desc "..."] [--repo "..."] [--path "/本地/路径"] [--tech "..."]
 pkb project delete <id|name> [--yes]
 ```
 
@@ -131,7 +131,7 @@ uv run ruff format pkb/   # format
 
 ## 数据模型
 
-- **projects**: `id(proj_*)`, `name(unique)`, `description`, `status(active/paused/completed/archived)`, `repo_url`, `tech_stack`, `created_at`, `updated_at`
+- **projects**: `id(proj_*)`, `name(unique)`, `description`, `status(active/paused/completed/archived)`, `repo_url`, `local_path`, `tech_stack`, `created_at`, `updated_at`
 - **tasks**: `id(task_*)`, `project_id(FK)`, `title`, `description`, `status(todo/in_progress/done/cancelled)`, `priority(P0-P3)`, `assignee`, `due_date`, `created_at`, `updated_at`
 - **notes**: `id(note_*)`, `project_id(FK,nullable)`, `content`, `tags`, `created_at`
 - **notes_fts / tasks_fts**: FTS5 external content 虚拟表，3 triggers 自动同步

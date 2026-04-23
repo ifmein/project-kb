@@ -65,9 +65,11 @@ uv run ruff check pkb/
 ## 数据库 Schema 要点
 
 - `tasks` / `notes` 有对应的 FTS5 虚拟表（`tasks_fts` / `notes_fts`），各 3 个 trigger 自动同步
+- `projects` 同样有 `projects_fts` 虚拟表，搜索时覆盖项目名和描述
 - `get_db()` 内部自动调用 `load_extension()`，调用方无需额外操作
-- `init_db()` 是幂等的（`CREATE TABLE IF NOT EXISTS`），重复调用安全
+- `init_db()` 是幂等的（`CREATE TABLE IF NOT EXISTS`），重复调用安全；内部调用 `_migrate()` 对已有 DB 补列
 - FTS5 tokenizer 在 `init_db()` 时固化进 schema，修改 tokenizer 需重建表
+- `projects` 字段：`id`, `name`, `description`, `status`, `repo_url`, `local_path`, `tech_stack`, `created_at`, `updated_at`
 
 ## `--json` 实现模式
 

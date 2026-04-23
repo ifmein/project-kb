@@ -40,13 +40,13 @@ uv run pkb status    # 查看 DB 路径、扩展加载状态、各表记录数
 uv run pkb project list [--status active|paused|completed|archived] [--json]
 
 # 新建项目
-uv run pkb project add --name "项目名" [--desc "描述"] [--status active] [--repo "url"] [--tech "Python,SQLite"] [--json]
+uv run pkb project add --name "项目名" [--desc "描述"] [--status active] [--repo "url"] [--path "/本地/路径"] [--tech "Python,SQLite"] [--json]
 
 # 查看详情（含任务统计）
 uv run pkb project show <id|name> [--json]
 
 # 更新字段（只传需要修改的字段）
-uv run pkb project update <id|name> [--name "新名"] [--desc "新描述"] [--status paused] [--repo "url"] [--tech "stack"] [--json]
+uv run pkb project update <id|name> [--name "新名"] [--desc "新描述"] [--status paused] [--repo "url"] [--path "/本地/路径"] [--tech "stack"] [--json]
 
 # 删除（级联删除关联的 tasks 和 notes）
 uv run pkb project delete <id|name> [--yes] [--json]
@@ -64,6 +64,7 @@ uv run pkb project delete <id|name> [--yes] [--json]
       "description": "描述",
       "status": "active",
       "repo_url": "",
+      "local_path": "/本地/路径",
       "tech_stack": "",
       "created_at": "2026-04-23",
       "updated_at": "2026-04-23"
