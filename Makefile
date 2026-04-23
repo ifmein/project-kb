@@ -11,7 +11,7 @@ install:
 	uv tool install .
 
 install-skill:
-	mkdir -p ~/.agents/skills
+	mkdir -p ~/.agents/skills/project-kb
 	cp reference/project-kb/SKILL.md ~/.agents/skills/project-kb/SKILL.md
 
 reinstall:
