@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
-"""Project Knowledge Base (pkb) - CLI entry point."""
+def main():
+    print("Hello from project-kb!")
 
-from cli import main
 
 if __name__ == "__main__":
     main()
