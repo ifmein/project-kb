@@ -38,9 +38,12 @@ def _row_to_dict(row) -> dict:
 # ---------------------------------------------------------------------------
 
 
-@click.group("project")
-def project() -> None:
+@click.group("project", invoke_without_command=True)
+@click.pass_context
+def project(ctx: click.Context) -> None:
     """Manage projects."""
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(project_list, status_filter=None, as_json=False)
 
 
 # ---------------------------------------------------------------------------
