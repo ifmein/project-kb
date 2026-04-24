@@ -40,7 +40,7 @@ pkb project delete <id|name> [--yes]
 ### 任务
 
 ```bash
-pkb task list --project <id|name> [--status todo] [--priority P1]
+pkb task list [--project <id|name>] [--status todo] [--priority P1]
 pkb task add --project <id|name> --title "..." [--priority P1] [--desc "..."]
 pkb task show <id>
 pkb task update <id> [--status in_progress] [--priority P0] [--title "..."] [--desc "..."]

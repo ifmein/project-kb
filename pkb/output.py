@@ -94,6 +94,7 @@ def print_project_panel(r: dict, task_stats: dict | None = None) -> None:
 def print_tasks_table(rows: list[dict]) -> None:
     t = Table(box=box.SIMPLE_HEAD, show_edge=False)
     t.add_column("ID", style="dim", no_wrap=True)
+    t.add_column("Project", style="dim", no_wrap=True)
     t.add_column("Title", style="bold")
     t.add_column("Status")
     t.add_column("Priority")
@@ -103,6 +104,7 @@ def print_tasks_table(rows: list[dict]) -> None:
         style = _status_style(st)
         t.add_row(
             r.get("id", ""),
+            r.get("project_id", "") or "-",
             r.get("title", ""),
             f"[{style}]{st}[/{style}]",
             r.get("priority", ""),

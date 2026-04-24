@@ -47,6 +47,39 @@ def test_task_list(db_path: Path, runner: CliRunner, project_name: str) -> None:
     assert data["count"] == 2
 
 
+def test_task_list_without_project_filter(db_path: Path, runner: CliRunner, project_name: str) -> None:
+    runner.invoke(cli, ["task", "add", "--project", project_name, "--title", "t1"])
+    runner.invoke(
+        cli,
+        [
+            "project",
+            "add",
+            "--name",
+            "second-project",
+            "--json",
+        ],
+    )
+    runner.invoke(cli, ["task", "add", "--project", "second-project", "--title", "t2"])
+
+    result = runner.invoke(cli, ["task", "list", "--json"])
+
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert data["count"] == 2
+
+
+def test_task_list_human_output_includes_project_id(db_path: Path, runner: CliRunner, project_name: str) -> None:
+    project_result = runner.invoke(cli, ["project", "show", project_name, "--json"])
+    project_id = json.loads(project_result.output)["project"]["id"]
+
+    runner.invoke(cli, ["task", "add", "--project", project_name, "--title", "t1"])
+    result = runner.invoke(cli, ["task", "list"])
+
+    assert result.exit_code == 0
+    assert "Project" in result.output
+    assert project_id in result.output
+
+
 def test_task_list_filter_status(db_path: Path, runner: CliRunner, project_name: str) -> None:
     r = runner.invoke(cli, ["task", "add", "--project", project_name, "--title", "t1", "--json"])
     task_id = json.loads(r.output)["task"]["id"]

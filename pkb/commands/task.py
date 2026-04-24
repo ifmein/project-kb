@@ -39,33 +39,37 @@ def task() -> None:
 
 
 @task.command("list")
-@click.option("--project", "proj", required=True, help="Project id or name.")
+@click.option("--project", "proj", default=None, help="Project id or name.")
 @click.option("--status", "status_filter", default=None, help="Filter by status.")
 @click.option("--priority", "priority_filter", default=None, help="Filter by priority.")
 @json_option
 @click.pass_context
 def task_list(
     ctx: click.Context,
-    proj: str,
+    proj: str | None,
     status_filter: str | None,
     priority_filter: str | None,
     as_json: bool,
 ) -> None:
-    """List tasks for a project."""
+    """List tasks, optionally filtered by project."""
     as_json = get_json_flag(ctx, as_json)
     conn = _db.get_db()
     try:
-        project_row = _resolve_project(conn, proj)
-        if not project_row:
-            conn.close()
-            if as_json:
-                out.error_json(f"Project not found: {proj}")
-            else:
-                out.print_error(f"Project not found: {proj}")
-            return
+        conditions: list[str] = []
+        params: list[str] = []
+        if proj:
+            project_row = _resolve_project(conn, proj)
+            if not project_row:
+                conn.close()
+                if as_json:
+                    out.error_json(f"Project not found: {proj}")
+                else:
+                    out.print_error(f"Project not found: {proj}")
+                return
 
-        conditions = ["project_id = ?"]
-        params: list = [project_row["id"]]
+            conditions.append("project_id = ?")
+            params.append(project_row["id"])
+
         if status_filter:
             conditions.append("status = ?")
             params.append(status_filter)
@@ -73,9 +77,9 @@ def task_list(
             conditions.append("priority = ?")
             params.append(priority_filter)
 
-        where = " AND ".join(conditions)
+        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
         rows = conn.execute(
-            f"SELECT * FROM tasks WHERE {where} ORDER BY priority ASC, created_at DESC",  # noqa: S608
+            f"SELECT * FROM tasks {where} ORDER BY priority ASC, created_at DESC",  # noqa: S608
             params,
         ).fetchall()
     finally:
