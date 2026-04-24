@@ -6,10 +6,10 @@ import json
 import sys
 from typing import Any
 
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from rich import box
 
 console = Console()
 err_console = Console(stderr=True)

@@ -11,8 +11,7 @@ from click.shell_completion import get_completion_class
 
 from pkb import db as _db
 from pkb import output as out
-from pkb.options import json_option, get_json_flag
-
+from pkb.options import get_json_flag, json_option
 
 _CONFIG_DIR = Path.home() / ".config" / "project-kb"
 # Path to the bundled libsimple inside the installed package (pkb/data/).

@@ -5,10 +5,10 @@ from __future__ import annotations
 import click
 
 from pkb.commands.init_cmd import completion_cmd, init_cmd, status_cmd
-from pkb.commands.project import project
-from pkb.commands.task import task
 from pkb.commands.note import note
+from pkb.commands.project import project
 from pkb.commands.search import search
+from pkb.commands.task import task
 
 
 @click.group()

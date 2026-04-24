@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import click
 
-from pkb import db as _db, output as out
-from pkb.models import fmt_ts
-from pkb.options import json_option, get_json_flag
+from pkb import db as _db
+from pkb import output as out
 from pkb.commands.project import _resolve_project
+from pkb.models import fmt_ts
+from pkb.options import get_json_flag, json_option
 
 
 def _search_db(
