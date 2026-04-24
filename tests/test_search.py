@@ -92,6 +92,24 @@ def test_search_result_schema(db_path: Path, runner: CliRunner, project_name: st
         assert "rank" not in r
 
 
+def test_search_project_result_includes_local_path(db_path: Path, runner: CliRunner) -> None:
+    local_path = "/tmp/pkb-search-proj"
+    project_name = "pathproj"
+    runner.invoke(
+        cli,
+        ["project", "add", "--name", project_name, "--path", local_path],
+    )
+
+    result = runner.invoke(cli, ["search", project_name, "--type", "project", "--json"])
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert data["count"] >= 1
+
+    project_results = [r for r in data["results"] if r["type"] == "project" and r["name"] == project_name]
+    assert project_results
+    assert project_results[0]["local_path"] == local_path
+
+
 # ---------------------------------------------------------------------------
 # Pinyin search — only with simple tokenizer
 # ---------------------------------------------------------------------------

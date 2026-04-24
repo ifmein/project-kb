@@ -26,7 +26,7 @@ def _search_db(
     if type_filter in (None, "project") and project_id is None:
         sql = """
             SELECT
-                p.id, p.name, p.description, p.status, p.created_at,
+                p.id, p.name, p.description, p.status, p.local_path, p.created_at,
                 projects_fts.rank AS rank
             FROM projects_fts
             JOIN projects p ON projects_fts.rowid = p.rowid
@@ -41,6 +41,7 @@ def _search_db(
                     "name": r["name"],
                     "description": r["description"],
                     "status": r["status"],
+                    "local_path": r["local_path"] or "",
                     "created_at": fmt_ts(r["created_at"]),
                     "_rank": r["rank"],
                 }

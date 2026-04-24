@@ -63,7 +63,7 @@ pkb note delete <id>
 pkb search "ntfy"                         # 全文搜索，中文 + 拼音
 pkb search "jue ce"                       # 拼音搜索，匹配"决策"
 pkb search "ntfy" --project <id|name>     # 限定项目
-pkb search "ntfy" --type note             # 限定类型 (task / note)
+pkb search "ntfy" --type note             # 限定类型 (project / task / note)
 pkb search "ntfy" --json                  # JSON 输出
 ```
 
@@ -75,9 +75,18 @@ pkb search "ntfy" --json                  # JSON 输出
   "query": "ntfy",
   "results": [
     { "type": "note", "id": "note_xxx", "project": "my-proj", "content": "...", "tags": "决策", "created_at": "2026-04-23" },
-    { "type": "task", "id": "task_yyy", "project": "my-proj", "title": "...", "status": "todo", "priority": "P1", "created_at": "2026-04-23" }
+    { "type": "task", "id": "task_yyy", "project": "my-proj", "title": "...", "status": "todo", "priority": "P1", "created_at": "2026-04-23" },
+    {
+      "type": "project",
+      "id": "proj_zzz",
+      "name": "my-proj",
+      "description": "...",
+      "status": "active",
+      "local_path": "/path/to/my-proj",
+      "created_at": "2026-04-23"
+    }
   ],
-  "count": 2
+  "count": 3
 }
 ```
 

@@ -169,6 +169,7 @@ def print_search_results(results: list[dict], query: str) -> None:
                 f"[bold]Name:[/bold]        {r.get('name', '')}\n"
                 f"[bold]Description:[/bold] {r.get('description', '') or '-'}\n"
                 f"[bold]Status:[/bold]      {r.get('status', '')}\n"
+                f"[bold]Local Path:[/bold]  {r.get('local_path', '') or '-'}\n"
                 f"[bold]Date:[/bold]        {r.get('created_at', '')}"
             )
         elif rtype == "note":
