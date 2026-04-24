@@ -1,6 +1,6 @@
 [project]
 name = "project-kb"
-version = "0.1.10"
+version = "0.1.11"
 description = "CLI project knowledge base: projects, tasks, notes, FTS5 search"
 readme = "README.md"
 requires-python = ">=3.12"

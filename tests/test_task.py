@@ -80,6 +80,26 @@ def test_task_list_human_output_includes_project_id(db_path: Path, runner: CliRu
     assert project_id in result.output
 
 
+def test_task_default_invokes_list_json(db_path: Path, runner: CliRunner, project_name: str) -> None:
+    runner.invoke(cli, ["task", "add", "--project", project_name, "--title", "t1"])
+
+    result = runner.invoke(cli, ["--json", "task"])
+
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert data["success"] is True
+    assert data["count"] == 1
+
+
+def test_task_default_invokes_list_human(db_path: Path, runner: CliRunner, project_name: str) -> None:
+    runner.invoke(cli, ["task", "add", "--project", project_name, "--title", "t1"])
+
+    result = runner.invoke(cli, ["task"])
+
+    assert result.exit_code == 0
+    assert "t1" in result.output
+
+
 def test_task_list_filter_status(db_path: Path, runner: CliRunner, project_name: str) -> None:
     r = runner.invoke(cli, ["task", "add", "--project", project_name, "--title", "t1", "--json"])
     task_id = json.loads(r.output)["task"]["id"]

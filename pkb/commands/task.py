@@ -28,9 +28,12 @@ def _row_to_dict(row) -> dict:
 # ---------------------------------------------------------------------------
 
 
-@click.group("task")
-def task() -> None:
+@click.group("task", invoke_without_command=True)
+@click.pass_context
+def task(ctx: click.Context) -> None:
     """Manage tasks."""
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(task_list, proj=None, status_filter=None, priority_filter=None, as_json=False)
 
 
 # ---------------------------------------------------------------------------
