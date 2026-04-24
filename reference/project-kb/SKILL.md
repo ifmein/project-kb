@@ -1,29 +1,34 @@
 ---
 name: project-kb
-description: 管理本地项目知识库（pkb CLI）。当用户提到项目进度、任务、备忘录、决策记录、全文搜索历史讨论，或者任何"记录一下"、"查一下之前"、"项目状态"、"有什么任务"等场景时使用此 skill。pkb 是本地 SQLite + FTS5 工具，支持中文和拼音搜索，所有命令加 --json 输出可直接 json.loads()。即使用户只是随口说"记录一个决定"或"看看 xxx 项目有什么进展"，也应触发此 skill。
+description: |
+  pkb 用来管理本地项目/知识库/任务
+  当用户提到项目进度、任务、备忘录、决策记录、全文搜索历史讨论, 或者任何"记录一下"、"查一下之前"、"项目状态"、"有什么任务"等场景时使用此 skill.
+  使用 SQLite + FTS5 工具, 支持中文和拼音搜索,
+  所有命令加 --json 输出可直接 json.loads()
+  即使用户只是随口说"记录一个决定"或"看看 xxx 项目有什么进展", 也应触发此 skill
 ---
 
 # pkb — Project Knowledge Base
 
-本地 CLI 工具，管理项目、任务、备忘录，支持中文和拼音全文搜索。
+本地 CLI 工具, 管理项目、任务、备忘录, 支持中文和拼音全文搜索.
 
-> **环境变量**：`PKB_DB_PATH`（默认 `~/.config/project-kb/pkb.db`）、`PKB_SIMPLE_EXT`（libsimple 路径，不带扩展名）。首次使用先运行 `pkb init`。
+> **环境变量**：`PKB_DB_PATH`（默认 `~/.config/project-kb/pkb.db`）、`PKB_SIMPLE_EXT`（libsimple 路径, 不带扩展名）.首次使用先运行 `pkb init`.
 
 ---
 
 ## 基本原则
 
-- **agent 调用一律加 `--json`**，返回值可直接 `json.loads()`
+- **agent 调用一律加 `--json`**, 返回值可直接 `json.loads()`
 - 项目用 `id`（`proj_*`）或 `name` 引用；任务、备忘只能用 `id`
-- 拼音搜索用**空格分隔全拼**（如 `jue ce` 匹配"决策"），不支持声母缩写（`jc` 无效）
-- 失败时 `--json` 返回 `{"success": false, "error": "..."}`，exit code 1
+- 拼音搜索用**空格分隔全拼**（如 `jue ce` 匹配"决策"）, 不支持声母缩写（`jc` 无效）
+- 失败时 `--json` 返回 `{"success": false, "error": "..."}`, exit code 1
 
 ---
 
 ## 初始化
 
 ```bash
-pkb init      # 首次：创建 ~/.config/project-kb/，建表，加载 libsimple
+pkb init      # 首次：创建 ~/.config/project-kb/, 建表, 加载 libsimple
 pkb status    # 查看 DB 路径、扩展状态、各表记录数
 ```
 
@@ -120,14 +125,14 @@ pkb note delete <note_id> [--json]
 
 ```bash
 pkb search "关键词" [--json]
-pkb search "jue ce" [--json]                          # 拼音全拼，空格分隔
+pkb search "jue ce" [--json]                          # 拼音全拼, 空格分隔
 pkb search "关键词" --project <id|name> [--json]
 pkb search "关键词" --type project|task|note [--json]
 ```
 
-> **注意**：关键词中含连字符（如 `my-term`）时 FTS5 会解析为 NOT，改用 `myterm` 或加引号。
+> **注意**：关键词中含连字符（如 `my-term`）时 FTS5 会解析为 NOT, 改用 `myterm` 或加引号.
 
-**`search --json` 输出**（按相关性降序，`results[0]` 最相关，不暴露 rank 值）：
+**`search --json` 输出**（按相关性降序, `results[0]` 最相关, 不暴露 rank 值）：
 
 ```json
 {
@@ -156,7 +161,7 @@ pkb task list --project <name> --status todo --json
 ### 记录决策 / 会议纪要
 
 ```bash
-pkb note add "决定采用 XXX 方案，原因是..." --project <name> --tags "决策" --json
+pkb note add "决定采用 XXX 方案, 原因是..." --project <name> --tags "决策" --json
 ```
 
 ### 查找历史讨论
@@ -169,7 +174,7 @@ pkb search "关键词" --project <name> --type note --json
 ### 注入上下文到 system prompt
 
 ```bash
-pkb project list --json    # 获取所有项目，生成摘要写入 system prompt
+pkb project list --json    # 获取所有项目, 生成摘要写入 system prompt
 ```
 
 ---
